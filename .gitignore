@@ -1,0 +1,99 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# API Keys & Sensitive Files
+**/google-services.json
+**/GoogleService-Info.plist
+android/key.properties
+ios/Runner/Info.plist
+**/firebase_options.dart
+.env
+.env.local
+.env.*.local
+
+# iOS
+ios/Pods/
+ios/Podfile.lock
+ios/Runner.xcworkspace/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+
+# macOS
+macos/Pods/
+macos/Podfile.lock
+macos/Runner.xcworkspace/
+macos/.symlinks/
+macos/Flutter/ephemeral/
+
+# Android
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+
+# Web
+web/flutter_service_worker.js
+
+# etc
+linux/flutter/generated_plugin_registrant.*
+windows/flutter/generated_plugin_registrant.*
+
+# Development
+*.lock
+.flutter-plugins
+.packages
+.metadata
+
+# App Store Connect API Key
+private_keys/
+AuthKey_*.p8
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
