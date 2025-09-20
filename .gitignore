@@ -88,6 +88,11 @@ windows/flutter/generated_plugin_registrant.*
 .packages
 .metadata
 
+# Backup & temporary files
+*_old.*
+*_backup.*
+*.tmp
+
 # App Store Connect API Key
 private_keys/
 AuthKey_*.p8
