@@ -351,15 +351,21 @@ class _SettingsScreenState extends State<SettingsScreen>
           title: '다크 모드',
           subtitle: '어두운 테마 사용',
           value: _isDarkMode,
-          onChanged: (value) {
+          onChanged: (value) async {
             setState(() {
               _isDarkMode = value;
             });
             _saveSettings();
+
+            // 햅틱 피드백 추가
+            if (_isHapticEnabled) {
+              HapticFeedback.mediumImpact();
+            }
+
             // ThemeNotifier를 통해 전체 앱 테마 변경
             Provider.of<ThemeNotifier>(context, listen: false).setTheme(value);
           },
-          icon: PhosphorIcons.moon(),
+          icon: _isDarkMode ? PhosphorIcons.moon() : PhosphorIcons.sun(),
           isDark: isDark,
         ),
         _buildSwitchTile(
@@ -394,7 +400,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           value: _defaultQRSize.toDouble(),
           min: 150,
           max: 300,
-          divisions: 5,
+          divisions: 10,
           onChanged: (value) {
             setState(() {
               _defaultQRSize = value.round();
@@ -705,10 +711,10 @@ class _SettingsScreenState extends State<SettingsScreen>
                       const SizedBox(height: 2),
                       Text(
                         subtitle,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF007AFF),
+                          color: Color(0xFF007AFF),
                           letterSpacing: -0.1,
                         ),
                       ),

@@ -22,6 +22,7 @@ class _HistoryScreenState extends State<HistoryScreen>
     with TickerProviderStateMixin {
   List<QRHistoryItem> _historyItems = [];
   bool _isLoading = true;
+  int _qrCodeSize = 200;
   late AnimationController _floatingController;
   late AnimationController _backgroundController;
   late AnimationController _pulseController;
@@ -32,12 +33,14 @@ class _HistoryScreenState extends State<HistoryScreen>
   void initState() {
     super.initState();
     _initializeAnimations();
+    _loadSettings();
     _loadHistory();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _loadSettings();
     _loadHistory();
   }
 
@@ -415,7 +418,11 @@ class _HistoryScreenState extends State<HistoryScreen>
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
                   HapticFeedback.mediumImpact();
-                  Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/',
+                    (route) => false,
+                  );
                 },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -731,6 +738,13 @@ class _HistoryScreenState extends State<HistoryScreen>
     }
   }
 
+  void _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _qrCodeSize = prefs.getInt('default_qr_size') ?? 200;
+    });
+  }
+
   void _loadHistory() async {
     await Future.delayed(const Duration(milliseconds: 500));
 
@@ -856,8 +870,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                       ),
                       child: Center(
                         child: Container(
-                          width: 200,
-                          height: 200,
+                          width: _qrCodeSize.toDouble(),
+                          height: _qrCodeSize.toDouble(),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),

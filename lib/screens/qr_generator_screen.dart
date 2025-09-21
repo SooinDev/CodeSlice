@@ -41,6 +41,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
   String _qrData = '';
   Color _selectedColor = const Color(0xFF007AFF);
   bool _isGenerating = false;
+  double _qrSize = 220;
 
   late AnimationController _qrAnimationController;
   late AnimationController _colorAnimationController;
@@ -62,6 +63,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
   void initState() {
     super.initState();
     _selectedColor = widget.color;
+    _loadQRSize();
     _qrAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -596,7 +598,58 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
               letterSpacing: -0.2,
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 20),
+          if (_qrData.isNotEmpty) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'QR코드 크기',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                Text(
+                  '${_qrSize.round()}px',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _selectedColor,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: _selectedColor,
+                inactiveTrackColor: isDark
+                    ? const Color(0xFF2C2C2E)
+                    : const Color(0xFFF2F2F7),
+                thumbColor: _selectedColor,
+                overlayColor: _selectedColor.withValues(alpha: 0.2),
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+                trackHeight: 4,
+              ),
+              child: Slider(
+                value: _qrSize,
+                min: 150,
+                max: 300,
+                divisions: 5,
+                onChanged: (value) {
+                  setState(() {
+                    _qrSize = value;
+                  });
+                  HapticFeedback.lightImpact();
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
           AnimatedBuilder(
             animation: _qrAnimationController,
             builder: (context, child) {
@@ -628,7 +681,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                           child: QrImageView(
                             data: _qrData,
                             version: QrVersions.auto,
-                            size: 220,
+                            size: _qrSize,
                             dataModuleStyle: QrDataModuleStyle(
                               dataModuleShape: QrDataModuleShape.square,
                               color: _selectedColor,
@@ -640,8 +693,8 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                             backgroundColor: Colors.white,
                             errorStateBuilder: (cxt, err) {
                               return Container(
-                                width: 220,
-                                height: 220,
+                                width: _qrSize,
+                                height: _qrSize,
                                 decoration: BoxDecoration(
                                   color: Colors.red.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(16),
@@ -671,8 +724,8 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                           ),
                         )
                       : Container(
-                          width: 220,
-                          height: 220,
+                          width: _qrSize,
+                          height: _qrSize,
                           decoration: BoxDecoration(
                             color: isDark
                                 ? const Color(0xFF2C2C2E)
@@ -1062,6 +1115,13 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     return String.fromCharCodes(Iterable.generate(
         8, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  }
+
+  void _loadQRSize() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _qrSize = prefs.getInt('default_qr_size')?.toDouble() ?? 220.0;
+    });
   }
 }
 

@@ -17,11 +17,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
-  late AnimationController _floatingController;
-  late AnimationController _backgroundController;
-  late AnimationController _pulseController;
-  late AnimationController _rotationController;
-  late AnimationController _breathingController;
+  AnimationController? _floatingController;
+  AnimationController? _backgroundController;
+  AnimationController? _pulseController;
+  AnimationController? _rotationController;
+  AnimationController? _breathingController;
 
   final List<QRType> _qrTypes = [
     QRType(
@@ -89,39 +89,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _initializeAnimations() {
-    _floatingController = AnimationController(
-      duration: const Duration(seconds: 4),
-      vsync: this,
-    )..repeat(reverse: true);
+    // 애니메이션 시작을 지연시켜 초기 로딩 성능 개선
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _floatingController = AnimationController(
+          duration: const Duration(seconds: 4),
+          vsync: this,
+        )..repeat(reverse: true);
 
-    _backgroundController = AnimationController(
-      duration: const Duration(seconds: 8),
-      vsync: this,
-    )..repeat();
+        _backgroundController = AnimationController(
+          duration: const Duration(seconds: 8),
+          vsync: this,
+        )..repeat();
 
-    _pulseController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    )..repeat(reverse: true);
+        _pulseController = AnimationController(
+          duration: const Duration(seconds: 3),
+          vsync: this,
+        )..repeat(reverse: true);
 
-    _rotationController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
+        _rotationController = AnimationController(
+          duration: const Duration(seconds: 20),
+          vsync: this,
+        )..repeat();
 
-    _breathingController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
+        _breathingController = AnimationController(
+          duration: const Duration(seconds: 2),
+          vsync: this,
+        )..repeat(reverse: true);
+      }
+    });
   }
 
   @override
   void dispose() {
-    _floatingController.dispose();
-    _backgroundController.dispose();
-    _pulseController.dispose();
-    _rotationController.dispose();
-    _breathingController.dispose();
+    _floatingController?.dispose();
+    _backgroundController?.dispose();
+    _pulseController?.dispose();
+    _rotationController?.dispose();
+    _breathingController?.dispose();
     super.dispose();
   }
 
@@ -161,16 +166,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildAnimatedBackground(bool isDark) {
+    if (_backgroundController == null) {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0.3, -0.2),
+            radius: 1.5,
+            colors: isDark
+                ? [
+                    const Color(0xFF000000),
+                    const Color(0xFF0A0A0A),
+                    const Color(0xFF000000),
+                  ]
+                : [
+                    const Color(0xFFF8F9FA),
+                    const Color(0xFFFFFFFF),
+                    const Color(0xFFF0F0F5),
+                  ],
+            stops: const [0.0, 0.6, 1.0],
+          ),
+        ),
+      );
+    }
+
     return AnimatedBuilder(
-      animation: _backgroundController,
+      animation: _backgroundController!,
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
             gradient: RadialGradient(
               center: Alignment(
-                0.3 + math.sin(_backgroundController.value * 2 * math.pi) * 0.2,
+                0.3 + math.sin(_backgroundController!.value * 2 * math.pi) * 0.2,
                 -0.2 +
-                    math.cos(_backgroundController.value * 2 * math.pi) * 0.1,
+                    math.cos(_backgroundController!.value * 2 * math.pi) * 0.1,
               ),
               radius: 1.5,
               colors: isDark
@@ -189,11 +217,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           child: Stack(
             children: [
-              ...List.generate(6, (index) {
+              if (_floatingController != null) ...List.generate(6, (index) {
                 return AnimatedBuilder(
-                  animation: _floatingController,
+                  animation: _floatingController!,
                   builder: (context, child) {
-                    final offset = _floatingController.value * 2 * math.pi;
+                    final offset = _floatingController!.value * 2 * math.pi;
                     final x =
                         0.2 + index * 0.15 + math.sin(offset + index) * 0.1;
                     final y = 0.1 +
@@ -268,10 +296,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnimatedBuilder(
-                      animation: _breathingController,
+                      animation: _breathingController ?? kAlwaysDismissedAnimation,
                       builder: (context, child) {
+                        final scale = _breathingController != null
+                            ? 1.0 + (_breathingController!.value * 0.02)
+                            : 1.0;
                         return Transform.scale(
-                          scale: 1.0 + (_breathingController.value * 0.02),
+                          scale: scale,
                           child: ShaderMask(
                             shaderCallback: (bounds) => LinearGradient(
                               begin: Alignment.topLeft,
@@ -367,13 +398,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildAnimatedLogo(bool isDark) {
     return AnimatedBuilder(
-      animation: _pulseController,
+      animation: _pulseController ?? kAlwaysDismissedAnimation,
       builder: (context, child) {
         return AnimatedBuilder(
-          animation: _rotationController,
+          animation: _rotationController ?? kAlwaysDismissedAnimation,
           builder: (context, child) {
+            final scale = _pulseController != null
+                ? 1.0 + (_pulseController!.value * 0.1)
+                : 1.0;
             return Transform.scale(
-              scale: 1.0 + (_pulseController.value * 0.1),
+              scale: scale,
               child: Container(
                 width: 80,
                 height: 80,
@@ -386,8 +420,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       const Color(0xFF5856D6),
                       const Color(0xFFAF52DE),
                     ],
-                    transform: GradientRotation(
-                        _rotationController.value * 2 * math.pi),
+                    transform: _rotationController != null
+                        ? GradientRotation(_rotationController!.value * 2 * math.pi)
+                        : null,
                   ),
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
@@ -458,21 +493,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(
-                child: _buildQuickActionCard(
-                  title: 'Scan QR',
-                  subtitle: 'Camera scanner',
-                  icon: Icons.qr_code_scanner_rounded,
-                  color: const Color(0xFF007AFF),
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    // TODO: Implement QR scanner
-                  },
-                  isDark: isDark,
-                  isSmallScreen: MediaQuery.of(context).size.width < 375,
-                ),
-              ),
-              const SizedBox(width: 12),
               Expanded(
                 child: _buildQuickActionCard(
                   title: 'Recent',
