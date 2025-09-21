@@ -432,7 +432,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         ),
         _buildTile(
           title: '개발자',
-          subtitle: 'QR Craft Team',
+          subtitle: 'QR Maker Team',
           onTap: null,
           icon: PhosphorIcons.user(),
           isDark: isDark,
@@ -865,8 +865,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
       scheme: 'mailto',
       path: 'feedback@qrcraft.app',
       queryParameters: {
-        'subject': 'QR Craft 피드백',
-        'body': '안녕하세요! QR Craft에 대한 피드백을 보내드립니다.\n\n',
+        'subject': 'QR Maker 피드백',
+        'body': '안녕하세요! QR Maker에 대한 피드백을 보내드립니다.\n\n',
       },
     );
 
@@ -878,7 +878,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
   }
 
   void _rateApp() async {
-    _showInfoDialog('평점 남기기', 'App Store에서 QR Craft를 검색하여 평점을 남겨주세요!');
+    _showInfoDialog('평점 남기기', 'App Store에서 QR Maker를 검색하여 평점을 남겨주세요!');
   }
 
   void _buyMeCoffee() async {
