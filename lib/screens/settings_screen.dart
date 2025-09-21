@@ -5,6 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import '../theme_notifier.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,10 +15,10 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStateMixin {
+class _SettingsScreenState extends State<SettingsScreen>
+    with TickerProviderStateMixin {
   bool _isDarkMode = false;
   bool _isHapticEnabled = true;
-  bool _isAutoSave = false;
   int _defaultQRSize = 200;
   late AnimationController _floatingController;
   late AnimationController _backgroundController;
@@ -227,8 +229,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -354,6 +356,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
               _isDarkMode = value;
             });
             _saveSettings();
+            // ThemeNotifier를 통해 전체 앱 테마 변경
+            Provider.of<ThemeNotifier>(context, listen: false).setTheme(value);
           },
           icon: PhosphorIcons.moon(),
           isDark: isDark,
@@ -384,19 +388,6 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
       icon: PhosphorIcons.qrCode(),
       isDark: isDark,
       children: [
-        _buildSwitchTile(
-          title: '자동 저장',
-          subtitle: '생성 시 갤러리에 자동 저장',
-          value: _isAutoSave,
-          onChanged: (value) {
-            setState(() {
-              _isAutoSave = value;
-            });
-            _saveSettings();
-          },
-          icon: PhosphorIcons.downloadSimple(),
-          isDark: isDark,
-        ),
         _buildSliderTile(
           title: '기본 QR코드 크기',
           subtitle: '${_defaultQRSize}px',
@@ -432,7 +423,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         ),
         _buildTile(
           title: '개발자',
-          subtitle: 'QR Maker Team',
+          subtitle: 'SooinDev',
           onTap: null,
           icon: PhosphorIcons.user(),
           isDark: isDark,
@@ -541,7 +532,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: (color ?? const Color(0xFF007AFF)).withValues(alpha: 0.3),
+                        color: (color ?? const Color(0xFF007AFF))
+                            .withValues(alpha: 0.3),
                         blurRadius: 15,
                         offset: const Offset(0, 6),
                       ),
@@ -598,16 +590,21 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: (value ? const Color(0xFF007AFF) : isDark
-                        ? const Color(0xFF2C2C2E)
-                        : const Color(0xFFF2F2F7)).withValues(alpha: 0.15),
+                    color: (value
+                            ? const Color(0xFF007AFF)
+                            : isDark
+                                ? const Color(0xFF2C2C2E)
+                                : const Color(0xFFF2F2F7))
+                        .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
-                    color: value ? const Color(0xFF007AFF) : isDark
-                        ? const Color(0xFF8E8E93)
-                        : const Color(0xFF6D6D70),
+                    color: value
+                        ? const Color(0xFF007AFF)
+                        : isDark
+                            ? const Color(0xFF8E8E93)
+                            : const Color(0xFF6D6D70),
                     size: 20,
                   ),
                 ),
@@ -621,7 +618,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                          color:
+                              isDark ? Colors.white : const Color(0xFF1D1D1F),
                           letterSpacing: -0.2,
                         ),
                       ),
@@ -699,7 +697,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                          color:
+                              isDark ? Colors.white : const Color(0xFF1D1D1F),
                           letterSpacing: -0.2,
                         ),
                       ),
@@ -722,9 +721,8 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: const Color(0xFF007AFF),
-                inactiveTrackColor: isDark
-                    ? const Color(0xFF2C2C2E)
-                    : const Color(0xFFF2F2F7),
+                inactiveTrackColor:
+                    isDark ? const Color(0xFF2C2C2E) : const Color(0xFFF2F2F7),
                 thumbColor: const Color(0xFF007AFF),
                 overlayColor: const Color(0xFF007AFF).withValues(alpha: 0.2),
                 thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
@@ -805,7 +803,9 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
                           fontWeight: FontWeight.w600,
                           color: isDestructive
                               ? const Color(0xFFFF3B30)
-                              : (isDark ? Colors.white : const Color(0xFF1D1D1F)),
+                              : (isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1D1D1F)),
                           letterSpacing: -0.2,
                         ),
                       ),
@@ -847,7 +847,6 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
     setState(() {
       _isDarkMode = prefs.getBool('dark_mode') ?? false;
       _isHapticEnabled = prefs.getBool('haptic_enabled') ?? true;
-      _isAutoSave = prefs.getBool('auto_save') ?? false;
       _defaultQRSize = prefs.getInt('default_qr_size') ?? 200;
     });
   }
@@ -856,7 +855,6 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('dark_mode', _isDarkMode);
     await prefs.setBool('haptic_enabled', _isHapticEnabled);
-    await prefs.setBool('auto_save', _isAutoSave);
     await prefs.setInt('default_qr_size', _defaultQRSize);
   }
 
@@ -983,7 +981,6 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
     setState(() {
       _isDarkMode = false;
       _isHapticEnabled = true;
-      _isAutoSave = false;
       _defaultQRSize = 200;
     });
 
