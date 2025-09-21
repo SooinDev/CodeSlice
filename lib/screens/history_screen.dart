@@ -6,6 +6,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -14,7 +18,8 @@ class HistoryScreen extends StatefulWidget {
   State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateMixin {
+class _HistoryScreenState extends State<HistoryScreen>
+    with TickerProviderStateMixin {
   List<QRHistoryItem> _historyItems = [];
   bool _isLoading = true;
   late AnimationController _floatingController;
@@ -224,8 +229,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -255,8 +260,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
             ),
           ),
           const SizedBox(width: 20),
-          if (_historyItems.isNotEmpty)
-            _buildAnimatedActionButton(isDark),
+          if (_historyItems.isNotEmpty) _buildAnimatedActionButton(isDark),
         ],
       ),
     ).animate().fadeIn(duration: 1000.ms).slideY(begin: -0.3);
@@ -310,7 +314,10 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
           ),
         );
       },
-    ).animate().fadeIn(duration: 600.ms, delay: 400.ms).scale(begin: const Offset(0.8, 0.8));
+    )
+        .animate()
+        .fadeIn(duration: 600.ms, delay: 400.ms)
+        .scale(begin: const Offset(0.8, 0.8));
   }
 
   Widget _buildLoadingState() {
@@ -482,7 +489,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
             _showQRDetail(item, isDark);
           },
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Container(
@@ -493,7 +500,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: _getColorForType(item.type).withValues(alpha: 0.3),
+                        color:
+                            _getColorForType(item.type).withValues(alpha: 0.3),
                         blurRadius: 15,
                         offset: const Offset(0, 6),
                       ),
@@ -534,7 +542,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                          color:
+                              isDark ? Colors.white : const Color(0xFF1D1D1F),
                           letterSpacing: -0.3,
                         ),
                       ),
@@ -559,7 +568,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _getColorForType(item.type).withValues(alpha: 0.1),
+                          color: _getColorForType(item.type)
+                              .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -574,7 +584,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 PopupMenuButton<String>(
                   onSelected: (value) => _handleMenuAction(value, item),
                   shape: RoundedRectangleBorder(
@@ -584,10 +594,12 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                     PopupMenuItem(
                       value: 'share',
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.share_rounded,
-                            color: isDark ? Colors.white : const Color(0xFF007AFF),
+                            color:
+                                isDark ? Colors.white : const Color(0xFF007AFF),
                           ),
                           const SizedBox(width: 12),
                           const Text('공유하기'),
@@ -597,8 +609,10 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                     PopupMenuItem(
                       value: 'delete',
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.delete_rounded, color: Color(0xFFFF3B30)),
+                          const Icon(Icons.delete_rounded,
+                              color: Color(0xFFFF3B30)),
                           const SizedBox(width: 12),
                           const Text(
                             '삭제하기',
@@ -609,8 +623,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                     ),
                   ],
                   child: Container(
-                    width: 40,
-                    height: 40,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: isDark
                           ? const Color(0xFF2C2C2E)
@@ -622,7 +636,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                       color: isDark
                           ? const Color(0xFF8E8E93)
                           : const Color(0xFF6D6D70),
-                      size: 20,
+                      size: 18,
                     ),
                   ),
                 ),
@@ -742,9 +756,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.8,
         decoration: BoxDecoration(
-          color: isDark
-              ? const Color(0xFF1C1C1E)
-              : Colors.white,
+          color: isDark ? const Color(0xFF1C1C1E) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           boxShadow: [
             BoxShadow(
@@ -761,9 +773,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF48484A)
-                    : const Color(0xFFD1D1D6),
+                color:
+                    isDark ? const Color(0xFF48484A) : const Color(0xFFD1D1D6),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -783,7 +794,8 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                             borderRadius: BorderRadius.circular(14),
                             boxShadow: [
                               BoxShadow(
-                                color: _getColorForType(item.type).withValues(alpha: 0.3),
+                                color: _getColorForType(item.type)
+                                    .withValues(alpha: 0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 6),
                               ),
@@ -805,7 +817,9 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
-                                  color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF1D1D1F),
                                   letterSpacing: -0.5,
                                 ),
                               ),
@@ -926,121 +940,63 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                          color:
+                              isDark ? Colors.white : const Color(0xFF1D1D1F),
                           letterSpacing: -0.1,
                         ),
                       ),
                     ),
                     const Spacer(),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF2C2C2E)
-                                  : const Color(0xFFF2F2F7),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: isDark
-                                    ? const Color(0xFF38383A)
-                                    : const Color(0xFFE5E5EA),
-                                width: 0.5,
-                              ),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  // Share functionality
-                                },
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.share_rounded,
-                                        color: isDark
-                                            ? Colors.white
-                                            : const Color(0xFF007AFF),
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '공유',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: isDark
-                                              ? Colors.white
-                                              : const Color(0xFF007AFF),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                    Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [Color(0xFF007AFF), Color(0xFF5856D6)],
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF007AFF).withValues(alpha: 0.3),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 6),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                const Color(0xFF007AFF).withValues(alpha: 0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(16),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            _shareQRCode(item);
+                          },
+                          child: const Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.share_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '공유',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ],
                             ),
-                            child: Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  // Save functionality
-                                },
-                                child: const Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.download_rounded,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        '저장',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -1059,6 +1015,7 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
   void _handleMenuAction(String action, QRHistoryItem item) {
     switch (action) {
       case 'share':
+        _shareQRCode(item);
         break;
       case 'delete':
         _deleteHistoryItem(item);
@@ -1076,9 +1033,11 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
         json.encode(_historyItems.map((item) => item.toJson()).toList());
     await prefs.setString('qr_history', historyJson);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('히스토리에서 삭제되었습니다')),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('히스토리에서 삭제되었습니다')),
+      );
+    }
   }
 
   void _showClearDialog() {
@@ -1112,9 +1071,199 @@ class _HistoryScreenState extends State<HistoryScreen> with TickerProviderStateM
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('qr_history');
 
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('모든 히스토리가 삭제되었습니다')),
+      );
+    }
+  }
+
+  void _showSuccessSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('모든 히스토리가 삭제되었습니다')),
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
     );
+  }
+
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(message),
+          ],
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
+
+
+  Future<void> _shareQRCode(QRHistoryItem item) async {
+    try {
+      HapticFeedback.lightImpact();
+      debugPrint('공유 시작: 히스토리에서');
+
+      // QR 데이터 유효성 검사
+      if (item.data.isEmpty) {
+        throw Exception('QR코드 데이터가 비어있습니다');
+      }
+
+      // QR 코드 이미지 생성
+      final qrPainter = QrPainter(
+        data: item.data,
+        version: QrVersions.auto,
+        dataModuleStyle: QrDataModuleStyle(
+          dataModuleShape: QrDataModuleShape.square,
+          color: Color(int.parse('0xff${item.color}')),
+        ),
+        eyeStyle: QrEyeStyle(
+          eyeShape: QrEyeShape.square,
+          color: Color(int.parse('0xff${item.color}')),
+        ),
+        gapless: true,
+      );
+
+      final pictureRecorder = ui.PictureRecorder();
+      final canvas = Canvas(pictureRecorder);
+      const size = 1024.0; // iOS에서 더 큰 이미지 사용
+
+      // 흰색 배경 그리기
+      canvas.drawRect(
+        const Rect.fromLTWH(0, 0, size, size),
+        Paint()..color = Colors.white,
+      );
+
+      // QR 코드 그리기 (여백 추가)
+      const margin = 64.0;
+      qrPainter.paint(canvas, const Size(size - margin * 2, size - margin * 2));
+
+      final picture = pictureRecorder.endRecording();
+      final image = await picture.toImage(size.toInt(), size.toInt());
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+      if (byteData == null) {
+        throw Exception('이미지 데이터를 생성할 수 없습니다');
+      }
+
+      final pngBytes = byteData.buffer.asUint8List();
+      debugPrint('이미지 데이터 크기: ${pngBytes.length} bytes');
+
+      // iOS에서 더 안전한 파일 경로 사용
+      final tempDir = await getTemporaryDirectory();
+      final fileName = 'QRCode_${DateTime.now().millisecondsSinceEpoch}.png';
+      final file = File('${tempDir.path}/$fileName');
+
+      // 파일 쓰기 전에 디렉토리 존재 확인
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(pngBytes, flush: true);
+
+      // 파일 생성 확인
+      if (!await file.exists()) {
+        throw Exception('파일 생성에 실패했습니다');
+      }
+
+      final fileSize = await file.length();
+      debugPrint('파일 생성 완료: ${file.path}, 크기: $fileSize bytes');
+
+      if (fileSize == 0) {
+        throw Exception('빈 파일이 생성되었습니다');
+      }
+
+      // iOS에서 공유 시 더 명확한 MIME 타입 지정
+      final xFile = XFile(
+        file.path,
+        name: fileName,
+        mimeType: 'image/png',
+      );
+
+      // 공유 실행
+      debugPrint('공유 시작 중...');
+      final result = await Share.shareXFiles(
+        [xFile],
+        text: 'QR Maker에서 생성한 ${item.type} QR코드\n\n${item.data}',
+        subject: 'QR 코드 공유',
+        sharePositionOrigin: mounted ?
+          Rect.fromLTWH(
+            MediaQuery.of(context).size.width / 2 - 50,
+            MediaQuery.of(context).size.height / 2 - 50,
+            100,
+            100,
+          ) : null,
+      );
+
+      debugPrint('공유 결과: ${result.status}');
+
+      // 공유 완료 후 임시 파일 정리 (iOS에서 더 긴 지연)
+      Future.delayed(const Duration(seconds: 10), () async {
+        try {
+          if (await file.exists()) {
+            await file.delete();
+            debugPrint('임시 파일 삭제 완료');
+          }
+        } catch (e) {
+          debugPrint('파일 삭제 실패: $e');
+        }
+      });
+
+      // 공유 결과에 따른 메시지 표시
+      if (mounted) {
+        switch (result.status) {
+          case ShareResultStatus.success:
+            _showSuccessSnackBar(context, 'QR코드가 성공적으로 공유되었습니다');
+            break;
+          case ShareResultStatus.dismissed:
+            debugPrint('사용자가 공유를 취소했습니다');
+            break;
+          case ShareResultStatus.unavailable:
+            _showErrorSnackBar(context, '이 기기에서는 공유 기능을 사용할 수 없습니다');
+            break;
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('공유 오류: $e');
+      debugPrint('스택 트레이스: $stackTrace');
+
+      if (mounted) {
+        String errorMessage = '공유 중 오류가 발생했습니다';
+        final errorString = e.toString().toLowerCase();
+
+        if (errorString.contains('파일') || errorString.contains('file')) {
+          errorMessage = '파일 생성에 실패했습니다. 저장 공간을 확인해주세요.';
+        } else if (errorString.contains('permission') || errorString.contains('권한')) {
+          errorMessage = '파일 접근 권한이 필요합니다. 설정을 확인해주세요.';
+        } else if (errorString.contains('network') ||
+            errorString.contains('연결')) {
+          errorMessage = '네트워크 오류가 발생했습니다';
+        } else if (errorString.contains('color') ||
+            errorString.contains('색상')) {
+          errorMessage = 'QR코드 색상 설정에 문제가 있습니다';
+        } else if (errorString.contains('data') ||
+            errorString.contains('데이터')) {
+          errorMessage = 'QR코드 데이터에 문제가 있습니다';
+        }
+
+        _showErrorSnackBar(context, errorMessage);
+      }
+    }
   }
 }
 

@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -177,11 +176,11 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
       actions: [
         if (_qrData.isNotEmpty) ...[
           Container(
-            margin: const EdgeInsets.only(right: 8),
+            margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
               color: isDark
-                  ? const Color(0xFF1C1C1E).withValues(alpha:0.8)
-                  : Colors.white.withValues(alpha:0.8),
+                  ? const Color(0xFF1C1C1E).withValues(alpha: 0.8)
+                  : Colors.white.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color:
@@ -203,39 +202,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                   height: 44,
                   child: Icon(
                     Icons.share_rounded,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF1C1C1E).withValues(alpha:0.8)
-                  : Colors.white.withValues(alpha:0.8),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color:
-                    isDark ? const Color(0xFF38383A) : const Color(0xFFE5E5EA),
-                width: 0.5,
-              ),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  _saveQR();
-                },
-                child: const SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: Icon(
-                    Icons.download_rounded,
                     size: 20,
                   ),
                 ),
@@ -276,7 +242,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: widget.color.withValues(alpha:0.3),
+                color: widget.color.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -326,8 +292,8 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF1C1C1E).withValues(alpha:0.6)
-            : Colors.white.withValues(alpha:0.8),
+            ? const Color(0xFF1C1C1E).withValues(alpha: 0.6)
+            : Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark ? const Color(0xFF38383A) : const Color(0xFFE5E5EA),
@@ -335,7 +301,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -453,7 +419,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
     return Container(
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF2C2C2E).withValues(alpha:0.6)
+            ? const Color(0xFF2C2C2E).withValues(alpha: 0.6)
             : const Color(0xFFF2F2F7),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
@@ -508,8 +474,8 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF1C1C1E).withValues(alpha:0.6)
-            : Colors.white.withValues(alpha:0.8),
+            ? const Color(0xFF1C1C1E).withValues(alpha: 0.6)
+            : Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark ? const Color(0xFF38383A) : const Color(0xFFE5E5EA),
@@ -517,7 +483,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -574,7 +540,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                         : null,
                     boxShadow: [
                       BoxShadow(
-                        color: color.withValues(alpha:isSelected ? 0.4 : 0.2),
+                        color: color.withValues(alpha: isSelected ? 0.4 : 0.2),
                         blurRadius: isSelected ? 12 : 8,
                         offset: const Offset(0, 4),
                       ),
@@ -604,8 +570,8 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF1C1C1E).withValues(alpha:0.6)
-            : Colors.white.withValues(alpha:0.8),
+            ? const Color(0xFF1C1C1E).withValues(alpha: 0.6)
+            : Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark ? const Color(0xFF38383A) : const Color(0xFFE5E5EA),
@@ -613,7 +579,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -643,13 +609,13 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: _selectedColor.withValues(alpha:0.2),
+                        color: _selectedColor.withValues(alpha: 0.2),
                         blurRadius: 30,
                         offset: const Offset(0, 12),
                         spreadRadius: 0,
                       ),
                       BoxShadow(
-                        color: Colors.black.withValues(alpha:0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 15,
                         offset: const Offset(0, 4),
                         spreadRadius: 0,
@@ -677,7 +643,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                                 width: 220,
                                 height: 220,
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withValues(alpha:0.1),
+                                  color: Colors.red.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: const Center(
@@ -764,15 +730,15 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
             ? widget.gradient
             : LinearGradient(
                 colors: [
-                  Colors.grey.withValues(alpha:0.3),
-                  Colors.grey.withValues(alpha:0.3),
+                  Colors.grey.withValues(alpha: 0.3),
+                  Colors.grey.withValues(alpha: 0.3),
                 ],
               ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: isEnabled
             ? [
                 BoxShadow(
-                  color: widget.color.withValues(alpha:0.3),
+                  color: widget.color.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -811,8 +777,10 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
   }
 
   Color _getContrastColor(Color color) {
-    double luminance =
-        (0.299 * (color.r * 255) + 0.587 * (color.g * 255) + 0.114 * (color.b * 255)) / 255;
+    double luminance = (0.299 * (color.r * 255) +
+            0.587 * (color.g * 255) +
+            0.114 * (color.b * 255)) /
+        255;
     return luminance > 0.5 ? Colors.black : Colors.white;
   }
 
@@ -874,79 +842,192 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
 
     HapticFeedback.heavyImpact();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('QR코드가 생성되고 히스토리에 저장되었습니다!'),
-        backgroundColor: widget.color,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _shareQR() async {
-    try {
-      HapticFeedback.lightImpact();
-      final boundary =
-          _qrKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: 3.0);
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      final pngBytes = byteData!.buffer.asUint8List();
-
-      final tempDir = await getTemporaryDirectory();
-      final file = await File('${tempDir.path}/qr_code.png').create();
-      await file.writeAsBytes(pngBytes);
-
-      await Share.shareXFiles([XFile(file.path)], text: 'QR Craft에서 생성한 QR코드');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('공유 중 오류가 발생했습니다'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  void _saveQR() async {
-    try {
-      HapticFeedback.lightImpact();
-      final boundary =
-          _qrKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: 3.0);
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      final pngBytes = byteData!.buffer.asUint8List();
-
-      final tempDir = await getTemporaryDirectory();
-      final file = await File(
-              '${tempDir.path}/qr_code_${DateTime.now().millisecondsSinceEpoch}.png')
-          .create();
-      await file.writeAsBytes(pngBytes);
-
-      await GallerySaver.saveImage(file.path);
-
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('갤러리에 저장되었습니다!'),
+          content: const Text('QR코드가 생성되고 히스토리에 저장되었습니다!'),
           backgroundColor: widget.color,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 2),
         ),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('저장 중 오류가 발생했습니다'),
-          backgroundColor: Colors.red,
-        ),
+    }
+  }
+
+  void _shareQR() async {
+    try {
+      HapticFeedback.lightImpact();
+      debugPrint('공유 시작: QR 생성기에서');
+
+      // QR코드 가 생성되었는지 확인
+      if (_qrData.isEmpty) {
+        throw Exception('QR코드가 생성되지 않았습니다');
+      }
+
+      // RenderRepaintBoundary를 사용하여 이미지 캡처
+      final boundary =
+          _qrKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) {
+        throw Exception('QR코드 렌더링 경계를 찾을 수 없습니다');
+      }
+
+      // iOS에서 더 높은 해상도로 캡처
+      final image = await boundary.toImage(pixelRatio: 4.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+      if (byteData == null) {
+        throw Exception('이미지 데이터를 생성할 수 없습니다');
+      }
+
+      final pngBytes = byteData.buffer.asUint8List();
+      debugPrint('이미지 데이터 크기: ${pngBytes.length} bytes');
+
+      // iOS에서 더 안전한 파일 경로 사용
+      final tempDir = await getTemporaryDirectory();
+      final fileName = 'QRCode_${DateTime.now().millisecondsSinceEpoch}.png';
+      final file = File('${tempDir.path}/$fileName');
+
+      // 파일 쓰기 전에 디렉토리 존재 확인
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes(pngBytes, flush: true);
+
+      // 파일 생성 확인
+      if (!await file.exists()) {
+        throw Exception('파일 생성에 실패했습니다');
+      }
+
+      final fileSize = await file.length();
+      debugPrint('파일 생성 완료: ${file.path}, 크기: $fileSize bytes');
+
+      if (fileSize == 0) {
+        throw Exception('빈 파일이 생성되었습니다');
+      }
+
+      // iOS에서 공유 시 더 명확한 MIME 타입 지정
+      final xFile = XFile(
+        file.path,
+        name: fileName,
+        mimeType: 'image/png',
       );
+
+      // 공유 실행
+      debugPrint('공유 시작 중...');
+      final result = await Share.shareXFiles(
+        [xFile],
+        text: 'QR Maker에서 생성한 ${widget.qrType} QR코드\n\n$_qrData',
+        subject: 'QR 코드 공유',
+        sharePositionOrigin: mounted ?
+          Rect.fromLTWH(
+            MediaQuery.of(context).size.width / 2 - 50,
+            MediaQuery.of(context).size.height / 2 - 50,
+            100,
+            100,
+          ) : null,
+      );
+
+      debugPrint('공유 결과: ${result.status}');
+
+      // 공유 완료 후 임시 파일 정리 (iOS에서 더 긴 지연)
+      Future.delayed(const Duration(seconds: 10), () async {
+        try {
+          if (await file.exists()) {
+            await file.delete();
+            debugPrint('임시 파일 삭제 완료');
+          }
+        } catch (e) {
+          debugPrint('파일 삭제 실패: $e');
+        }
+      });
+
+      // 공유 결과에 따른 메시지 표시
+      if (mounted) {
+        switch (result.status) {
+          case ShareResultStatus.success:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('QR코드가 성공적으로 공유되었습니다'),
+                  ],
+                ),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.all(16),
+              ),
+            );
+            break;
+          case ShareResultStatus.dismissed:
+            // 사용자가 취소한 경우 - 메시지 표시하지 않음
+            break;
+          case ShareResultStatus.unavailable:
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('공유 기능을 사용할 수 없습니다'),
+                  ],
+                ),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.all(16),
+              ),
+            );
+            break;
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('공유 오류: $e');
+      debugPrint('스택 트레이스: $stackTrace');
+
+      if (mounted) {
+        String errorMessage = '공유 중 오류가 발생했습니다';
+        final errorString = e.toString().toLowerCase();
+
+        if (errorString.contains('permission') || errorString.contains('권한')) {
+          errorMessage = '파일 접근 권한이 필요합니다. 설정을 확인해주세요.';
+        } else if (errorString.contains('파일') || errorString.contains('file')) {
+          errorMessage = '파일 생성에 실패했습니다. 저장 공간을 확인해주세요.';
+        } else if (errorString.contains('network') ||
+            errorString.contains('연결')) {
+          errorMessage = '네트워크 오류가 발생했습니다';
+        } else if (errorString.contains('render') ||
+            errorString.contains('렌더')) {
+          errorMessage = 'QR코드 렌더링에 실패했습니다. 다시 시도해주세요.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(child: Text(errorMessage)),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
     }
   }
 

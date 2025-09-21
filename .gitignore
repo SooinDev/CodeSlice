@@ -48,7 +48,6 @@ app.*.map.json
 **/google-services.json
 **/GoogleService-Info.plist
 android/key.properties
-ios/Runner/Info.plist
 **/firebase_options.dart
 .env
 .env.local

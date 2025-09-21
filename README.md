@@ -1,16 +1,44 @@
-# qr_maker
+# QR Maker
 
-A new Flutter project.
+QR 코드를 생성할 수 있는 Flutter 애플리케이션입니다.
 
-## Getting Started
+## 기능
 
-This project is a starting point for a Flutter application.
+- QR 코드 생성
+- 사용자 친화적인 인터페이스
 
-A few resources to get you started if this is your first Flutter project:
+## 시작하기
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 필요 사항
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter SDK
+- Dart SDK
+- Android Studio 또는 VS Code
+
+### 설치 및 실행
+
+1. 저장소를 클론합니다
+   ```bash
+   git clone [repository-url]
+   cd qr_maker
+   ```
+
+2. 의존성을 설치합니다
+   ```bash
+   flutter pub get
+   ```
+
+3. 애플리케이션을 실행합니다
+   ```bash
+   flutter run
+   ```
+
+## 개발 환경
+
+- Flutter 3.x
+- Dart 3.x
+
+## 참고 자료
+
+- [Flutter 공식 문서](https://docs.flutter.dev/)
+- [Dart 공식 문서](https://dart.dev/guides)
