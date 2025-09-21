@@ -1152,9 +1152,8 @@ class _HistoryScreenState extends State<HistoryScreen>
         Paint()..color = Colors.white,
       );
 
-      // QR 코드 그리기 (여백 추가)
-      const margin = 64.0;
-      qrPainter.paint(canvas, const Size(size - margin * 2, size - margin * 2));
+      // QR 코드 그리기 (여백 없이)
+      qrPainter.paint(canvas, const Size(size, size));
 
       final picture = pictureRecorder.endRecording();
       final image = await picture.toImage(size.toInt(), size.toInt());
