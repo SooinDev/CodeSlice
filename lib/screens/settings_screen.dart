@@ -869,8 +869,8 @@ class _SettingsScreenState extends State<SettingsScreen>
       scheme: 'mailto',
       path: 'feedback@qrcraft.app',
       queryParameters: {
-        'subject': 'QR Maker 피드백',
-        'body': '안녕하세요! QR Maker에 대한 피드백을 보내드립니다.\n\n',
+        'subject': 'CodeSlice 피드백',
+        'body': '안녕하세요! CodeSlice에 대한 피드백을 보내드립니다.\n\n',
       },
     );
 
@@ -882,7 +882,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _rateApp() async {
-    _showInfoDialog('평점 남기기', 'App Store에서 QR Maker를 검색하여 평점을 남겨주세요!');
+    _showInfoDialog('평점 남기기', 'App Store에서 CodeSlice를 검색하여 평점을 남겨주세요!');
   }
 
   void _buyMeCoffee() async {
@@ -890,30 +890,150 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _showClearHistoryDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+      barrierDismissible: false,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.4),
         ),
-        title: const Text('모든 히스토리 삭제'),
-        content: const Text('정말로 모든 QR코드 히스토리를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _clearAllHistory();
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFFFF3B30),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 40),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
-            child: const Text('삭제'),
-          ),
-        ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 32),
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Color(0xFFFF3B30),
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    '모든 히스토리를 삭제하시겠습니까?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                      letterSpacing: -0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    '저장된 모든 QR코드 기록이 영구적으로 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? const Color(0xFF8E8E93)
+                          : const Color(0xFF6D6D70),
+                      height: 1.4,
+                      letterSpacing: -0.1,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: FilledButton(
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            Navigator.pop(context);
+                            _clearAllHistory();
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF3B30),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            '삭제',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: TextButton(
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.pop(context);
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF007AFF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          )
+              .animate()
+              .scale(
+                duration: 250.ms,
+                curve: Curves.easeOutBack,
+              )
+              .fadeIn(
+                duration: 200.ms,
+              ),
+        ),
       ),
     );
   }

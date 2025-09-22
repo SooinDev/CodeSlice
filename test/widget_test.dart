@@ -3,7 +3,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('QR Maker app test', (WidgetTester tester) async {
+  testWidgets('CodeSlice app test', (WidgetTester tester) async {
     // Basic test placeholder
     expect(true, true);
   });

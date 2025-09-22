@@ -975,7 +975,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
       debugPrint('공유 시작 중...');
       final result = await Share.shareXFiles(
         [xFile],
-        text: 'QR Maker에서 생성한 ${widget.qrType} QR코드\n\n$_qrData',
+        text: 'CodeSlice에서 생성한 ${widget.qrType} QR코드\n\n$_qrData',
         subject: 'QR 코드 공유',
         sharePositionOrigin: mounted ?
           Rect.fromLTWH(

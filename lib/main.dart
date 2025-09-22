@@ -58,7 +58,7 @@ class QRCraftApp extends StatelessWidget {
         );
 
         return MaterialApp(
-          title: 'QR Maker',
+          title: 'CodeSlice',
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           darkTheme: darkTheme,

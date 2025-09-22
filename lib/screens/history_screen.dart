@@ -1100,24 +1100,147 @@ class _HistoryScreenState extends State<HistoryScreen>
   }
 
   void _showClearDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('모든 히스토리 삭제'),
-        content: const Text('정말로 모든 히스토리를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+      barrierDismissible: false,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.4),
+        ),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 40),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 32),
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Color(0xFFFF3B30),
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    '모든 히스토리를 삭제하시겠습니까?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                      letterSpacing: -0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    '저장된 모든 QR코드 기록이 영구적으로 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? const Color(0xFF8E8E93)
+                          : const Color(0xFF6D6D70),
+                      height: 1.4,
+                      letterSpacing: -0.1,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: FilledButton(
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            Navigator.pop(context);
+                            _clearAllHistory();
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF3B30),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            '삭제',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: TextButton(
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.pop(context);
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF007AFF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ).animate().scale(
+            duration: 250.ms,
+            curve: Curves.easeOutBack,
+          ).fadeIn(
+            duration: 200.ms,
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _clearAllHistory();
-            },
-            child: const Text('삭제'),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -1257,7 +1380,7 @@ class _HistoryScreenState extends State<HistoryScreen>
       debugPrint('공유 시작 중...');
       final result = await Share.shareXFiles(
         [xFile],
-        text: 'QR Maker에서 생성한 ${item.type} QR코드\n\n${item.data}',
+        text: 'CodeSlice에서 생성한 ${item.type} QR코드\n\n${item.data}',
         subject: 'QR 코드 공유',
         sharePositionOrigin: mounted ?
           Rect.fromLTWH(

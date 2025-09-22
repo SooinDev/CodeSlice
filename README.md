@@ -1,4 +1,4 @@
-# 🎨 QR Maker - 아름다운 QR 코드 생성기
+# 🎨 CodeSlice - 아름다운 QR 코드 생성기
 
 <div align="center">
   <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" />
