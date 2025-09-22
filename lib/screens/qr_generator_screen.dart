@@ -682,6 +682,8 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
                             data: _qrData,
                             version: QrVersions.auto,
                             size: _qrSize,
+                            gapless: true,
+                            semanticsLabel: 'QR Code',
                             dataModuleStyle: QrDataModuleStyle(
                               dataModuleShape: QrDataModuleShape.square,
                               color: _selectedColor,
@@ -842,36 +844,38 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
 
     switch (widget.qrType) {
       case '텍스트':
-        data = _textController.text;
+        data = _textController.text.trim();
         break;
 
       case 'URL':
-        data = _urlController.text;
+        data = _urlController.text.trim();
         break;
 
       case 'WiFi':
-        if (_wifiNameController.text.isNotEmpty) {
+        if (_wifiNameController.text.trim().isNotEmpty) {
           data =
-              'WIFI:T:WPA;S:${_wifiNameController.text};P:${_wifiPasswordController.text};;';
+              'WIFI:T:WPA;S:${_wifiNameController.text.trim()};P:${_wifiPasswordController.text.trim()};;';
         }
         break;
 
       case '연락처':
-        if (_nameController.text.isNotEmpty ||
-            _phoneController.text.isNotEmpty) {
+        if (_nameController.text.trim().isNotEmpty ||
+            _phoneController.text.trim().isNotEmpty) {
           data = 'BEGIN:VCARD\n'
               'VERSION:3.0\n'
-              'FN:${_nameController.text}\n'
-              'TEL:${_phoneController.text}\n'
-              'EMAIL:${_emailController.text}\n'
+              'FN:${_nameController.text.trim()}\n'
+              'TEL:${_phoneController.text.trim()}\n'
+              'EMAIL:${_emailController.text.trim()}\n'
               'END:VCARD';
         }
         break;
     }
 
-    setState(() {
-      _qrData = data;
-    });
+    if (_qrData != data) {
+      setState(() {
+        _qrData = data;
+      });
+    }
   }
 
   void _generateQR() async {
@@ -1101,7 +1105,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
       historyList.add(historyItem.toJson());
 
       if (historyList.length > 100) {
-        historyList.removeAt(0);
+        historyList.removeRange(0, historyList.length - 100);
       }
 
       await prefs.setString('qr_history', json.encode(historyList));
@@ -1118,10 +1122,17 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen>
   }
 
   void _loadQRSize() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _qrSize = prefs.getInt('default_qr_size')?.toDouble() ?? 220.0;
-    });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedSize = prefs.getDouble('default_qr_size') ?? prefs.getInt('default_qr_size')?.toDouble() ?? 220.0;
+      if (mounted) {
+        setState(() {
+          _qrSize = savedSize;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load QR size preference: $e');
+    }
   }
 }
 

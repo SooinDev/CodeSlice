@@ -793,7 +793,7 @@ class _HistoryScreenState extends State<HistoryScreen>
               ),
             ),
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(28),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -936,6 +936,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                     ),
                     const SizedBox(height: 12),
                     Container(
+                      constraints: const BoxConstraints(maxHeight: 200),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: isDark
@@ -949,18 +950,61 @@ class _HistoryScreenState extends State<HistoryScreen>
                           width: 0.5,
                         ),
                       ),
-                      child: Text(
-                        item.data,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color:
-                              isDark ? Colors.white : const Color(0xFF1D1D1F),
-                          letterSpacing: -0.1,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: SelectableText(
+                                item.data,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: isDark ? Colors.white : const Color(0xFF1D1D1F),
+                                  letterSpacing: -0.1,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                            if (item.data.length > 100) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFF007AFF).withValues(alpha: 0.2),
+                                    width: 0.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.copy_rounded,
+                                      size: 16,
+                                      color: const Color(0xFF007AFF),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      '텍스트 복사 가능',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF007AFF),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 24),
                     Container(
                       height: 50,
                       decoration: BoxDecoration(
@@ -1012,6 +1056,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

@@ -89,33 +89,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _initializeAnimations() {
-    // 애니메이션 시작을 지연시켜 초기 로딩 성능 개선
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
+      if (!mounted) return;
+
+      try {
+        _floatingController?.dispose();
         _floatingController = AnimationController(
           duration: const Duration(seconds: 4),
           vsync: this,
         )..repeat(reverse: true);
 
+        _backgroundController?.dispose();
         _backgroundController = AnimationController(
           duration: const Duration(seconds: 8),
           vsync: this,
         )..repeat();
 
+        _pulseController?.dispose();
         _pulseController = AnimationController(
           duration: const Duration(seconds: 3),
           vsync: this,
         )..repeat(reverse: true);
 
+        _rotationController?.dispose();
         _rotationController = AnimationController(
           duration: const Duration(seconds: 20),
           vsync: this,
         )..repeat();
 
+        _breathingController?.dispose();
         _breathingController = AnimationController(
           duration: const Duration(seconds: 2),
           vsync: this,
         )..repeat(reverse: true);
+      } catch (e) {
+        debugPrint('Animation initialization error: $e');
       }
     });
   }
@@ -442,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 child: Stack(
                   children: [
-                    Center(
+                    const Center(
                       child: Icon(
                         Icons.qr_code_2_rounded,
                         color: Colors.white,
