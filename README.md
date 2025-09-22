@@ -41,13 +41,7 @@ CodeSlice는 프리미엄 디자인과 부드러운 애니메이션으로 완성
 QR코드,QR코드생성기,바코드,큐알코드,WiFi공유,연락처공유,URL단축,비즈니스카드,이벤트,마케팅,공유,스캔
 
 ### **지원 URL**
-https://github.com/yourusername/codeslice-support
-(또는 개인 블로그나 포트폴리오 사이트 주소)
-
-### **개인정보 처리방침 URL**
-https://yourusername.github.io/codeslice-privacy-policy
-(GitHub Pages를 이용하여 생성 권장)
-
+https://github.com/SooinDev/codeslice
 ---
 
 ## 개인정보 처리방침
