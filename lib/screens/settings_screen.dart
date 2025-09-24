@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,331 +13,85 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen>
-    with TickerProviderStateMixin {
+class _SettingsScreenState extends State<SettingsScreen> {
   bool _isDarkMode = false;
   bool _isHapticEnabled = true;
   int _defaultQRSize = 200;
-  late AnimationController _floatingController;
-  late AnimationController _backgroundController;
-  late AnimationController _pulseController;
-  late AnimationController _rotationController;
-  late AnimationController _breathingController;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
     _loadSettings();
-  }
-
-  void _initializeAnimations() {
-    _floatingController = AnimationController(
-      duration: const Duration(seconds: 4),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _backgroundController = AnimationController(
-      duration: const Duration(seconds: 8),
-      vsync: this,
-    )..repeat();
-
-    _pulseController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _rotationController = AnimationController(
-      duration: const Duration(seconds: 20),
-      vsync: this,
-    )..repeat();
-
-    _breathingController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _floatingController.dispose();
-    _backgroundController.dispose();
-    _pulseController.dispose();
-    _rotationController.dispose();
-    _breathingController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF000000) : const Color(0xFFF8F9FA),
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      body: SizedBox(
-        height: screenHeight,
-        child: Stack(
+      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      appBar: _buildAppBar(isDark),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
-            _buildAnimatedBackground(isDark),
-            SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(isDark),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.fromLTRB(28, 0, 28, 100),
-                      children: [
-                        _buildAppearanceSection(isDark),
-                        const SizedBox(height: 24),
-                        _buildQRSettingsSection(isDark),
-                        const SizedBox(height: 24),
-                        _buildAboutSection(isDark),
-                        const SizedBox(height: 24),
-                        _buildDangerZoneSection(isDark),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildAppearanceSection(isDark),
+            const SizedBox(height: 16),
+            _buildQRSettingsSection(isDark),
+            const SizedBox(height: 16),
+            _buildAboutSection(isDark),
+            const SizedBox(height: 16),
+            _buildDangerZoneSection(isDark),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAnimatedBackground(bool isDark) {
-    return AnimatedBuilder(
-      animation: _backgroundController,
-      builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment(
-                0.3 + math.sin(_backgroundController.value * 2 * math.pi) * 0.2,
-                -0.2 +
-                    math.cos(_backgroundController.value * 2 * math.pi) * 0.1,
-              ),
-              radius: 1.5,
-              colors: isDark
-                  ? [
-                      const Color(0xFF000000),
-                      const Color(0xFF0A0A0A),
-                      const Color(0xFF000000),
-                    ]
-                  : [
-                      const Color(0xFFF8F9FA),
-                      const Color(0xFFFFFFFF),
-                      const Color(0xFFF0F0F5),
-                    ],
-              stops: const [0.0, 0.6, 1.0],
-            ),
-          ),
-          child: Stack(
-            children: [
-              ...List.generate(6, (index) {
-                return AnimatedBuilder(
-                  animation: _floatingController,
-                  builder: (context, child) {
-                    final offset = _floatingController.value * 2 * math.pi;
-                    final x =
-                        0.2 + index * 0.15 + math.sin(offset + index) * 0.1;
-                    final y = 0.1 +
-                        index * 0.12 +
-                        math.cos(offset + index * 0.7) * 0.05;
-
-                    return Positioned(
-                      left: MediaQuery.of(context).size.width * x,
-                      top: MediaQuery.of(context).size.height * y,
-                      child: Container(
-                        width: 100 + index * 20,
-                        height: 100 + index * 20,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              const Color(0xFF007AFF)
-                                  .withValues(alpha: isDark ? 0.1 : 0.05),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildHeader(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(28, 20, 28, 32),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  PreferredSizeWidget _buildAppBar(bool isDark) {
+    return AppBar(
+      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      title: Row(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0969DA).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFF0969DA).withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                AnimatedBuilder(
-                  animation: _breathingController,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: 1.0 + (_breathingController.value * 0.02),
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFF007AFF),
-                            const Color(0xFF5856D6),
-                            const Color(0xFFAF52DE),
-                          ],
-                          stops: const [0.0, 0.5, 1.0],
-                        ).createShader(bounds),
-                        child: Text(
-                          '설정',
-                          style: TextStyle(
-                            fontSize: 42,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -2,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                offset: const Offset(0, 2),
-                                blurRadius: 4,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                const Icon(
+                  Icons.settings_outlined,
+                  size: 16,
+                  color: Color(0xFF0969DA),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF007AFF).withValues(alpha: 0.1),
-                        const Color(0xFF5856D6).withValues(alpha: 0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: const Color(0xFF007AFF).withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    '앱 설정 및 개인화 옵션',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.9)
-                          : const Color(0xFF007AFF),
-                      letterSpacing: 0.2,
-                    ),
+                const SizedBox(width: 6),
+                const Text(
+                  '설정',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0969DA),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 20),
-          _buildAnimatedLogo(isDark),
         ],
       ),
-    ).animate().fadeIn(duration: 1000.ms).slideY(begin: -0.3);
-  }
-
-  Widget _buildAnimatedLogo(bool isDark) {
-    return AnimatedBuilder(
-      animation: _pulseController,
-      builder: (context, child) {
-        return AnimatedBuilder(
-          animation: _rotationController,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: 1.0 + (_pulseController.value * 0.1),
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFF007AFF),
-                      const Color(0xFF5856D6),
-                      const Color(0xFFAF52DE),
-                    ],
-                    transform: GradientRotation(
-                        _rotationController.value * 2 * math.pi),
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF007AFF).withValues(alpha: 0.3),
-                      blurRadius: 30,
-                      offset: const Offset(0, 15),
-                      spreadRadius: 0,
-                    ),
-                    BoxShadow(
-                      color: const Color(0xFF5856D6).withValues(alpha: 0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Icon(
-                        Icons.settings,
-                        color: Colors.white,
-                        size: 36,
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.white.withValues(alpha: 0.2),
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.1),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
     );
   }
+
+
 
   Widget _buildAppearanceSection(bool isDark) {
     return _buildSection(
@@ -385,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           isDark: isDark,
         ),
       ],
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2);
+    );
   }
 
   Widget _buildQRSettingsSection(bool isDark) {
@@ -411,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           isDark: isDark,
         ),
       ],
-    ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideY(begin: 0.2);
+    );
   }
 
   Widget _buildAboutSection(bool isDark) {
@@ -459,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           isDark: isDark,
         ),
       ],
-    ).animate().fadeIn(duration: 600.ms, delay: 400.ms).slideY(begin: 0.2);
+    );
   }
 
   Widget _buildDangerZoneSection(bool isDark) {
@@ -488,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           isDark: isDark,
         ),
       ],
-    ).animate().fadeIn(duration: 600.ms, delay: 600.ms).slideY(begin: 0.2);
+    );
   }
 
   Widget _buildSection({
@@ -500,65 +252,44 @@ class _SettingsScreenState extends State<SettingsScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF1C1C1E).withValues(alpha: 0.8)
-            : Colors.white.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(24),
+        color: isDark ? const Color(0xFF21262D) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? const Color(0xFF38383A) : const Color(0xFFE5E5EA),
-          width: 0.5,
+          color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+          width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
-            blurRadius: 25,
-            offset: const Offset(0, 12),
-            spreadRadius: 0,
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: color != null
-                          ? [color, color.withValues(alpha: 0.8)]
-                          : [const Color(0xFF007AFF), const Color(0xFF5856D6)],
+                    color: (color ?? const Color(0xFF0969DA)).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: (color ?? const Color(0xFF0969DA)).withValues(alpha: 0.2),
+                      width: 1,
                     ),
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (color ?? const Color(0xFF007AFF))
-                            .withValues(alpha: 0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
                   ),
                   child: Icon(
                     icon,
-                    color: Colors.white,
-                    size: 24,
+                    color: color ?? const Color(0xFF0969DA),
+                    size: 16,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : const Color(0xFF1D1D1F),
-                    letterSpacing: -0.3,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
                   ),
                 ),
               ],
@@ -579,84 +310,60 @@ class _SettingsScreenState extends State<SettingsScreen>
     required bool isDark,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            HapticFeedback.lightImpact();
-            onChanged(!value);
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            child: Row(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: (value ? const Color(0xFF0969DA) : (isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA))).withValues(alpha: value ? 0.1 : 1.0),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: value ? const Color(0xFF0969DA).withValues(alpha: 0.2) : (isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE)),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              icon,
+              color: value ? const Color(0xFF0969DA) : (isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76)),
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: (value
-                            ? const Color(0xFF007AFF)
-                            : isDark
-                                ? const Color(0xFF2C2C2E)
-                                : const Color(0xFFF2F2F7))
-                        .withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: value
-                        ? const Color(0xFF007AFF)
-                        : isDark
-                            ? const Color(0xFF8E8E93)
-                            : const Color(0xFF6D6D70),
-                    size: 20,
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              isDark ? Colors.white : const Color(0xFF1D1D1F),
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isDark
-                              ? const Color(0xFF8E8E93)
-                              : const Color(0xFF6D6D70),
-                          letterSpacing: -0.1,
-                        ),
-                      ),
-                    ],
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Switch(
-                  value: value,
-                  onChanged: (newValue) {
-                    HapticFeedback.lightImpact();
-                    onChanged(newValue);
-                  },
-                  activeThumbColor: const Color(0xFF007AFF),
                 ),
               ],
             ),
           ),
-        ),
+          Switch(
+            value: value,
+            onChanged: (newValue) {
+              HapticFeedback.lightImpact();
+              onChanged(newValue);
+            },
+            activeThumbColor: const Color(0xFF0969DA),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ],
       ),
     );
   }
@@ -673,80 +380,77 @@ class _SettingsScreenState extends State<SettingsScreen>
     required bool isDark,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: const Color(0xFF007AFF),
-                    size: 20,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0969DA).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: const Color(0xFF0969DA).withValues(alpha: 0.2),
+                    width: 1,
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              isDark ? Colors.white : const Color(0xFF1D1D1F),
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF007AFF),
-                          letterSpacing: -0.1,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: Icon(
+                  icon,
+                  color: const Color(0xFF0969DA),
+                  size: 16,
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: const Color(0xFF007AFF),
-                inactiveTrackColor:
-                    isDark ? const Color(0xFF2C2C2E) : const Color(0xFFF2F2F7),
-                thumbColor: const Color(0xFF007AFF),
-                overlayColor: const Color(0xFF007AFF).withValues(alpha: 0.2),
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
-                trackHeight: 6,
               ),
-              child: Slider(
-                value: value,
-                min: min,
-                max: max,
-                divisions: divisions,
-                onChanged: (newValue) {
-                  HapticFeedback.lightImpact();
-                  onChanged(newValue);
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF0969DA),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: const Color(0xFF0969DA),
+              inactiveTrackColor: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+              thumbColor: const Color(0xFF0969DA),
+              overlayColor: const Color(0xFF0969DA).withValues(alpha: 0.1),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+              trackHeight: 4,
             ),
-          ],
-        ),
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: divisions,
+              onChanged: (newValue) {
+                HapticFeedback.lightImpact();
+                onChanged(newValue);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -761,11 +465,10 @@ class _SettingsScreenState extends State<SettingsScreen>
     bool isDestructive = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
           onTap: onTap != null
               ? () {
                   HapticFeedback.lightImpact();
@@ -773,31 +476,33 @@ class _SettingsScreenState extends State<SettingsScreen>
                 }
               : null,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
                     color: isDestructive
-                        ? const Color(0xFFFF3B30).withValues(alpha: 0.15)
-                        : (isDark
-                            ? const Color(0xFF2C2C2E)
-                            : const Color(0xFFF2F2F7)),
-                    borderRadius: BorderRadius.circular(12),
+                        ? const Color(0xFFDA3633).withValues(alpha: 0.1)
+                        : (isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA)),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: isDestructive
+                          ? const Color(0xFFDA3633).withValues(alpha: 0.2)
+                          : (isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE)),
+                      width: 1,
+                    ),
                   ),
                   child: Icon(
                     icon,
                     color: isDestructive
-                        ? const Color(0xFFFF3B30)
-                        : (isDark
-                            ? const Color(0xFF8E8E93)
-                            : const Color(0xFF6D6D70)),
-                    size: 20,
+                        ? const Color(0xFFDA3633)
+                        : (isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76)),
+                    size: 16,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -805,26 +510,19 @@ class _SettingsScreenState extends State<SettingsScreen>
                       Text(
                         title,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: isDestructive
-                              ? const Color(0xFFFF3B30)
-                              : (isDark
-                                  ? Colors.white
-                                  : const Color(0xFF1D1D1F)),
-                          letterSpacing: -0.2,
+                              ? const Color(0xFFDA3633)
+                              : (isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F)),
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         subtitle,
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isDark
-                              ? const Color(0xFF8E8E93)
-                              : const Color(0xFF6D6D70),
-                          letterSpacing: -0.1,
+                          fontSize: 12,
+                          color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
                         ),
                       ),
                     ],
@@ -834,11 +532,9 @@ class _SettingsScreenState extends State<SettingsScreen>
                   Icon(
                     Icons.chevron_right_rounded,
                     color: isDestructive
-                        ? const Color(0xFFFF3B30)
-                        : (isDark
-                            ? const Color(0xFF8E8E93)
-                            : const Color(0xFF6D6D70)),
-                    size: 20,
+                        ? const Color(0xFFDA3633)
+                        : (isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76)),
+                    size: 16,
                   ),
               ],
             ),
@@ -894,162 +590,152 @@ class _SettingsScreenState extends State<SettingsScreen>
 
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.4),
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+            width: 1,
+          ),
         ),
-        child: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 40),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDA3633).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFDA3633).withValues(alpha: 0.2),
+                  width: 1,
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 32),
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.delete_outline_rounded,
-                    color: Color(0xFFFF3B30),
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    '모든 히스토리를 삭제하시겠습니까?',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF1D1D1F),
-                      letterSpacing: -0.3,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    '저장된 모든 QR코드 기록이 영구적으로 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? const Color(0xFF8E8E93)
-                          : const Color(0xFF6D6D70),
-                      height: 1.4,
-                      letterSpacing: -0.1,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: FilledButton(
-                          onPressed: () {
-                            HapticFeedback.mediumImpact();
-                            Navigator.pop(context);
-                            _clearAllHistory();
-                          },
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF3B30),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            '삭제',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: TextButton(
-                          onPressed: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.pop(context);
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: const Color(0xFF007AFF),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            '취소',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          )
-              .animate()
-              .scale(
-                duration: 250.ms,
-                curve: Curves.easeOutBack,
-              )
-              .fadeIn(
-                duration: 200.ms,
               ),
+              child: const Icon(
+                Icons.delete_outline_rounded,
+                color: Color(0xFFDA3633),
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              '히스토리 삭제',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+              ),
+            ),
+          ],
         ),
+        content: Text(
+          '모든 QR코드 기록이 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.',
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            child: const Text('취소'),
+          ),
+          FilledButton(
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              Navigator.pop(context);
+              _clearAllHistory();
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFDA3633),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            child: const Text('삭제'),
+          ),
+        ],
       ),
     );
   }
 
   void _showResetAppDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+            width: 1,
+          ),
         ),
-        title: const Text('앱 데이터 초기화'),
-        content: const Text('모든 설정과 히스토리가 삭제됩니다.\n정말로 계속하시겠습니까?'),
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDA3633).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFDA3633).withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: const Icon(
+                Icons.refresh_rounded,
+                color: Color(0xFFDA3633),
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              '앱 데이터 초기화',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          '모든 설정과 히스토리가 삭제됩니다. 정말로 계속하시겠습니까?',
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+            height: 1.4,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
             child: const Text('취소'),
           ),
           FilledButton(
@@ -1058,7 +744,15 @@ class _SettingsScreenState extends State<SettingsScreen>
               _resetAppData();
             },
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFFFF3B30),
+              backgroundColor: const Color(0xFFDA3633),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             child: const Text('초기화'),
           ),
@@ -1068,19 +762,48 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _showInfoDialog(String title, String message) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+            width: 1,
+          ),
         ),
-        title: Text(title),
-        content: Text(message),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+            height: 1.4,
+          ),
+        ),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(context),
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF007AFF),
+              backgroundColor: const Color(0xFF0969DA),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             child: const Text('확인'),
           ),
