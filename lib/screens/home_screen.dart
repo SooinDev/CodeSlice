@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: PhosphorIcons.textT(),
       title: '텍스트',
       subtitle: 'Messages & Notes',
-      color: const Color(0xFF0969DA),
+      color: const Color(0xFF007AFF),
       emoji: '📝',
       description: 'Create QR codes from any text',
     ),
@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: PhosphorIcons.globe(),
       title: 'URL',
       subtitle: 'Links & Websites',
-      color: const Color(0xFF1F8959),
+      color: const Color(0xFF34C759),
       emoji: '🌐',
       description: 'Share websites and URLs',
     ),
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: PhosphorIcons.wifiHigh(),
       title: 'WiFi',
       subtitle: 'Network Access',
-      color: const Color(0xFFFB8500),
+      color: const Color(0xFFFF9500),
       emoji: '📶',
       description: 'Quick WiFi connection',
     ),
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: PhosphorIcons.addressBook(),
       title: '연락처',
       subtitle: 'Contact Info',
-      color: const Color(0xFF8957E5),
+      color: const Color(0xFF5856D6),
       emoji: '👤',
       description: 'Share contact details',
     ),
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFF8F9FA),
       body: IndexedStack(
         index: _selectedIndex,
         children: [
@@ -74,16 +74,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHomeContent(bool isDark, double safeAreaBottom) {
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(isDark),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             _buildQuickActions(isDark),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             _buildQRTypesGrid(isDark),
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
           ],
         ),
       ),
@@ -97,19 +97,33 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
-                color: const Color(0xFF0969DA),
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF007AFF),
+                    Color(0xFF5856D6),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.3),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
               child: const Icon(
                 Icons.qr_code_2_rounded,
                 color: Colors.white,
-                size: 24,
+                size: 32,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,17 +131,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     'CodeSlice',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+                      letterSpacing: -0.7,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     'QR코드 생성기',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ],
@@ -135,21 +152,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 36),
         Text(
           '어떤 QR코드를 만들까요?',
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+            letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           '다양한 형태의 QR코드를 빠르고 간편하게 생성하세요',
           style: TextStyle(
-            fontSize: 14,
-            color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+            height: 1.4,
+            letterSpacing: -0.2,
           ),
         ),
       ],
@@ -275,20 +296,21 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           'QR코드 생성',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+            letterSpacing: -0.3,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.0,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.9,
           ),
           itemCount: _qrTypes.length,
           itemBuilder: (context, index) {
@@ -330,15 +352,15 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 36,
+                      height: 36,
                       decoration: BoxDecoration(
                         color: qrType.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -350,37 +372,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Icon(
                         qrType.icon,
                         color: qrType.color,
-                        size: 20,
+                        size: 18,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       qrType.emoji,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Text(
                   qrType.title,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   qrType.subtitle,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
                   ),
                 ),
                 const Spacer(),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
                   decoration: BoxDecoration(
                     color: qrType.color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -393,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     '생성하기',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: qrType.color,
                     ),

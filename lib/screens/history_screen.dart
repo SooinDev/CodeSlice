@@ -22,6 +22,9 @@ class _HistoryScreenState extends State<HistoryScreen>
   bool _isLoading = true;
   int _qrCodeSize = 200;
   late AnimationController _animationController;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  String? _selectedItemId;
 
   @override
   void initState() {
@@ -40,9 +43,25 @@ class _HistoryScreenState extends State<HistoryScreen>
 
   void _initializeAnimations() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+
+    _slideAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutQuart,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
   }
 
   @override
@@ -56,7 +75,7 @@ class _HistoryScreenState extends State<HistoryScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
       appBar: _buildAppBar(isDark),
       body: SafeArea(
         child: _isLoading
@@ -70,47 +89,22 @@ class _HistoryScreenState extends State<HistoryScreen>
 
   PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0969DA).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: const Color(0xFF0969DA).withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  PhosphorIcons.clockCounterClockwise(),
-                  size: 16,
-                  color: const Color(0xFF0969DA),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  '히스토리',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0969DA),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      surfaceTintColor: Colors.transparent,
+      title: Text(
+        '히스토리',
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+        ),
       ),
       actions: [
         if (_historyItems.isNotEmpty)
           Container(
-            margin: const EdgeInsets.only(right: 16),
+            margin: const EdgeInsets.only(right: 20),
             child: IconButton(
               onPressed: () {
                 HapticFeedback.mediumImpact();
@@ -118,7 +112,7 @@ class _HistoryScreenState extends State<HistoryScreen>
               },
               icon: Icon(
                 Icons.delete_outline_rounded,
-                color: isDark ? const Color(0xFFD0D7DE) : const Color(0xFF656D76),
+                color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
                 size: 20,
               ),
               style: IconButton.styleFrom(
@@ -130,7 +124,7 @@ class _HistoryScreenState extends State<HistoryScreen>
                     width: 1,
                   ),
                 ),
-                minimumSize: const Size(36, 36),
+                minimumSize: const Size(40, 40),
               ),
             ),
           ),
@@ -146,31 +140,35 @@ class _HistoryScreenState extends State<HistoryScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 48,
-            height: 48,
-            padding: const EdgeInsets.all(12),
+            width: 64,
+            height: 64,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-                width: 1,
-              ),
+              color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFFFF),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: const CircularProgressIndicator(
-              strokeWidth: 2.5,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
               valueColor: AlwaysStoppedAnimation<Color>(
-                Color(0xFF0969DA),
+                isDark ? const Color(0xFF007AFF) : const Color(0xFF007AFF),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             '히스토리를 불러오는 중...',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+              color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+              letterSpacing: -0.2,
             ),
           ),
         ],
@@ -181,67 +179,95 @@ class _HistoryScreenState extends State<HistoryScreen>
   Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 120,
+              height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFF0969DA).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    const Color(0xFF007AFF).withValues(alpha: 0.1),
+                    const Color(0xFF5856D6).withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                  color: const Color(0xFF0969DA).withValues(alpha: 0.2),
+                  color: isDark
+                    ? const Color(0xFF007AFF).withValues(alpha: 0.2)
+                    : const Color(0xFF007AFF).withValues(alpha: 0.15),
                   width: 1,
                 ),
               ),
               child: Icon(
                 PhosphorIcons.clockCounterClockwise(),
-                size: 36,
-                color: const Color(0xFF0969DA),
+                size: 48,
+                color: const Color(0xFF007AFF),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             Text(
-              '생성한 QR코드가 없습니다',
+              '아직 생성한 QR코드가 없어요',
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'QR코드를 생성하면 여기에 기록이 표시됩니다',
-              style: TextStyle(
-                fontSize: 14,
-                color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+                letterSpacing: -0.5,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            FilledButton.icon(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/',
-                  (route) => false,
-                );
-              },
-              icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text('QR코드 만들기'),
-              style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF0969DA),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+            const SizedBox(height: 12),
+            Text(
+              'QR코드를 생성하면 여기에 기록이 표시됩니다.\n언제든지 다시 찾아볼 수 있어요.',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+                height: 1.5,
+                letterSpacing: -0.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: FilledButton.icon(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/',
+                    (route) => false,
+                  );
+                },
+                icon: const Icon(Icons.add_rounded, size: 20),
+                label: const Text('첫 QR코드 만들기'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
+                  elevation: 0,
                 ),
               ),
             ),
@@ -255,15 +281,16 @@ class _HistoryScreenState extends State<HistoryScreen>
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
           child: Row(
             children: [
               Text(
-                '총 ${_historyItems.length}개의 QR코드',
+                '총 ${_historyItems.length}개',
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+                  letterSpacing: -0.2,
                 ),
               ),
             ],
@@ -271,9 +298,9 @@ class _HistoryScreenState extends State<HistoryScreen>
         ),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
             itemCount: _historyItems.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final item = _historyItems[index];
               return _buildHistoryCard(item, index, isDark);
@@ -285,168 +312,246 @@ class _HistoryScreenState extends State<HistoryScreen>
   }
 
   Widget _buildHistoryCard(QRHistoryItem item, int index, bool isDark) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF21262D) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            HapticFeedback.mediumImpact();
-            _showQRDetail(item, isDark);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: _getColorForType(item.type).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _getColorForType(item.type).withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(
-                    _getIconForType(item.type),
-                    color: _getColorForType(item.type),
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: _getColorForType(item.type).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                color: _getColorForType(item.type).withValues(alpha: 0.2),
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              item.type,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: _getColorForType(item.type),
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            _formatDate(item.createdAt),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        item.data.length > 60
-                            ? '${item.data.substring(0, 60)}...'
-                            : item.data,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF21262D) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+              width: 1,
+            ),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                _showSelectionFeedback(item.id);
+                _showQRDetail(item, isDark);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _getColorForType(item.type).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _getColorForType(item.type).withValues(alpha: 0.2),
+                          width: 1,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                PopupMenuButton<String>(
-                  onSelected: (value) => _handleMenuAction(value, item),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'share',
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      child: Icon(
+                        _getIconForType(item.type),
+                        color: _getColorForType(item.type),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.share_rounded,
-                            size: 16,
-                            color: const Color(0xFF0969DA),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: _getColorForType(item.type).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: _getColorForType(item.type).withValues(alpha: 0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  item.type,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: _getColorForType(item.type),
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                _formatDate(item.createdAt),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            '공유하기',
-                            style: TextStyle(fontSize: 14),
+                          const SizedBox(height: 8),
+                          if (item.name != null && item.name!.isNotEmpty) ...[
+                            Text(
+                              item.name!,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                          ],
+                          Text(
+                            item.data.length > 60
+                                ? '${item.data.substring(0, 60)}...'
+                                : item.data,
+                            style: TextStyle(
+                              fontSize: item.name != null && item.name!.isNotEmpty ? 13 : 14,
+                              fontWeight: item.name != null && item.name!.isNotEmpty ? FontWeight.w400 : FontWeight.w500,
+                              color: item.name != null && item.name!.isNotEmpty
+                                  ? (isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76))
+                                  : (isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F)),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.delete_rounded,
-                            size: 16,
-                            color: Color(0xFFDA3633),
+                    const SizedBox(width: 8),
+                    PopupMenuButton<String>(
+                      onSelected: (value) => _handleMenuAction(value, item),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'share',
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.share_rounded,
+                                size: 16,
+                                color: const Color(0xFF0969DA),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                '공유하기',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            '삭제하기',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFFDA3633),
-                            ),
+                        ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.delete_rounded,
+                                size: 16,
+                                color: Color(0xFFDA3633),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                '삭제하기',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFDA3633),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ],
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF0D1117) : const Color(0xFFF6F8FA),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE),
+                            width: 1,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.more_horiz_rounded,
+                          color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+                          size: 16,
+                        ),
                       ),
                     ),
                   ],
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF0D1117) : const Color(0xFFF6F8FA),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE),
-                        width: 1,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.more_horiz_rounded,
-                      color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
-                      size: 16,
-                    ),
-                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+        if (_selectedItemId == item.id)
+          AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Transform.translate(
+                    offset: Offset(
+                      0,
+                      (MediaQuery.of(context).size.height * 0.1) * _slideAnimation.value,
+                    ),
+                    child: Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _getColorForType(item.type).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getColorForType(item.type).withValues(alpha: 0.4),
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: _getColorForType(item.type).withValues(alpha: 0.9),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '${item.type} 선택됨',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 
@@ -454,15 +559,15 @@ class _HistoryScreenState extends State<HistoryScreen>
   Color _getColorForType(String type) {
     switch (type) {
       case '텍스트':
-        return const Color(0xFF0969DA);
+        return const Color(0xFF007AFF);
       case 'URL':
-        return const Color(0xFF1F8959);
+        return const Color(0xFF34C759);
       case 'WiFi':
-        return const Color(0xFFFB8500);
+        return const Color(0xFFFF9500);
       case '연락처':
-        return const Color(0xFF8957E5);
+        return const Color(0xFF5856D6);
       default:
-        return const Color(0xFF0969DA);
+        return const Color(0xFF007AFF);
     }
   }
 
@@ -494,6 +599,26 @@ class _HistoryScreenState extends State<HistoryScreen>
     } else {
       return '방금 전';
     }
+  }
+
+  void _showSelectionFeedback(String itemId) {
+    setState(() {
+      _selectedItemId = itemId;
+    });
+
+    _animationController.forward().then((_) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _animationController.reverse().then((_) {
+            if (mounted) {
+              setState(() {
+                _selectedItemId = null;
+              });
+            }
+          });
+        }
+      });
+    });
   }
 
   void _loadSettings() async {
@@ -576,14 +701,45 @@ class _HistoryScreenState extends State<HistoryScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                item.type,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                              if (item.name != null && item.name!.isNotEmpty) ...[
+                                Text(
+                                  item.name!,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 2),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: _getColorForType(item.type).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                      color: _getColorForType(item.type).withValues(alpha: 0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    item.type,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: _getColorForType(item.type),
+                                    ),
+                                  ),
+                                ),
+                              ] else ...[
+                                Text(
+                                  item.type,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 4),
                               Text(
                                 _formatFullDate(item.createdAt),
@@ -1055,6 +1211,7 @@ class QRHistoryItem {
   final String data;
   final DateTime createdAt;
   final String color;
+  final String? name;
 
   QRHistoryItem({
     required this.id,
@@ -1062,6 +1219,7 @@ class QRHistoryItem {
     required this.data,
     required this.createdAt,
     required this.color,
+    this.name,
   });
 
   factory QRHistoryItem.fromJson(Map<String, dynamic> json) {
@@ -1071,6 +1229,7 @@ class QRHistoryItem {
       data: json['data'],
       createdAt: DateTime.parse(json['createdAt']),
       color: json['color'],
+      name: json['name'],
     );
   }
 
@@ -1081,6 +1240,7 @@ class QRHistoryItem {
       'data': data,
       'createdAt': createdAt.toIso8601String(),
       'color': color,
+      'name': name,
     };
   }
 }

@@ -79,24 +79,24 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
       appBar: _buildAppBar(isDark),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildTypeHeader(isDark),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               _buildInputSection(isDark),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               _buildColorSelector(isDark),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               _buildQRCodeSection(isDark),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               _buildGenerateButton(isDark),
-              const SizedBox(height: 20),
+              const SizedBox(height: 28),
             ],
           ),
         ),
@@ -106,31 +106,21 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
 
   PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(
-      backgroundColor: isDark ? const Color(0xFF0D1117) : const Color(0xFFFAFBFC),
+      backgroundColor: isDark ? const Color(0xFF21262D) : Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
       leading: IconButton(
         onPressed: () {
           HapticFeedback.lightImpact();
           Navigator.pop(context);
         },
-        icon: const Icon(Icons.arrow_back_rounded),
-        style: IconButton.styleFrom(
-          backgroundColor: isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-              width: 1,
-            ),
-          ),
-          minimumSize: const Size(36, 36),
-        ),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
       ),
       title: Text(
         '${widget.qrType} QR코드',
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
         ),
@@ -143,19 +133,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
               _shareQR();
             },
             icon: const Icon(Icons.share_rounded),
-            style: IconButton.styleFrom(
-              backgroundColor: isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(
-                  color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-                  width: 1,
-                ),
-              ),
-              minimumSize: const Size(36, 36),
-            ),
           ),
-        const SizedBox(width: 16),
       ],
     );
   }
@@ -182,19 +160,33 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
     return Row(
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                widget.color,
+                widget.color.withValues(alpha: 0.8),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: widget.color.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Icon(
             iconData,
-            size: 24,
+            size: 28,
             color: Colors.white,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 20),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,17 +194,20 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
               Text(
                 '${widget.qrType} QR코드 생성',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+                  letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 '정보를 입력하여 QR코드를 생성하세요',
                 style: TextStyle(
-                  fontSize: 14,
-                  color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+                  letterSpacing: -0.2,
                 ),
               ),
             ],
@@ -224,7 +219,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
 
   Widget _buildInputSection(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF21262D) : Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -357,30 +352,42 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
         maxLines: maxLines,
         onChanged: (_) => _updateQRData(),
         style: TextStyle(
-          fontSize: 14,
-          color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+          letterSpacing: -0.2,
         ),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          prefixIcon: Icon(
-            icon,
-            color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
-            size: 20,
+          prefixIcon: Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            child: Icon(
+              icon,
+              color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+              size: 22,
+            ),
           ),
           labelStyle: TextStyle(
-            fontSize: 14,
-            color: isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280),
+            letterSpacing: -0.1,
           ),
           hintStyle: TextStyle(
-            fontSize: 14,
-            color: isDark ? const Color(0xFF656D76) : const Color(0xFF8B949E),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: isDark ? const Color(0xFF636366) : const Color(0xFF9CA3AF),
+            letterSpacing: -0.2,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 12,
+            horizontal: 16,
+            vertical: 16,
           ),
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
         ),
       ),
     );
@@ -388,14 +395,21 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
 
   Widget _buildColorSelector(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF21262D) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-          width: 1,
+          color: isDark ? const Color(0xFF2C2C2E) : const Color(0xFFE5E7EB),
+          width: 0.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,19 +417,20 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
           Text(
             'QR코드 색상',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+              letterSpacing: -0.3,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 5,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
               childAspectRatio: 1,
             ),
             itemCount: _premiumColors.length,
@@ -430,25 +445,36 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                   });
                   HapticFeedback.selectionClick();
                 },
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(14),
                     border: isSelected
                         ? Border.all(
-                            color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
-                            width: 2,
+                            color: Colors.white,
+                            width: 3,
                           )
-                        : Border.all(
-                            color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-                            width: 1,
-                          ),
+                        : null,
+                    boxShadow: [
+                      if (isSelected)
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: isSelected
                       ? Icon(
                           Icons.check_rounded,
                           color: _getContrastColor(color),
-                          size: 16,
+                          size: 20,
                         )
                       : null,
                 ),
@@ -462,26 +488,34 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
 
   Widget _buildQRCodeSection(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF21262D) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
-          width: 1,
+          color: isDark ? const Color(0xFF2C2C2E) : const Color(0xFFE5E7EB),
+          width: 0.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Text(
             'QR코드 미리보기',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1A1A1A),
+              letterSpacing: -0.3,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           if (_qrData.isNotEmpty) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -645,33 +679,53 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
     final isEnabled = _qrData.isNotEmpty && !_isGenerating;
 
     return Container(
-      height: 44,
+      height: 56,
       decoration: BoxDecoration(
-        color: isEnabled ? widget.color : (isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE)),
-        borderRadius: BorderRadius.circular(8),
+        gradient: isEnabled
+          ? LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                widget.color,
+                widget.color.withValues(alpha: 0.8),
+              ],
+            )
+          : null,
+        color: !isEnabled ? (isDark ? const Color(0xFF2C2C2E) : const Color(0xFFF2F2F7)) : null,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isEnabled ? [
+          BoxShadow(
+            color: widget.color.withValues(alpha: 0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ] : null,
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
           onTap: isEnabled ? _generateQR : null,
           child: Center(
             child: _isGenerating
                 ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 24,
+                    height: 24,
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 2,
+                      strokeWidth: 3,
                     ),
                   )
                 : Text(
                     'QR코드 생성하기',
                     style: TextStyle(
-                      color: isEnabled ? Colors.white : (isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76)),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      color: isEnabled
+                        ? Colors.white
+                        : (isDark ? const Color(0xFF8E8E93) : const Color(0xFF6B7280)),
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.3,
                     ),
                   ),
           ),
@@ -730,13 +784,16 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
   void _generateQR() async {
     if (_qrData.isEmpty) return;
 
+    final qrName = await _showNameDialog();
+    if (qrName == null) return; // 사용자가 다이얼로그를 취소한 경우
+
     setState(() {
       _isGenerating = true;
     });
 
     await Future.delayed(const Duration(milliseconds: 800));
 
-    await _saveToHistory();
+    await _saveToHistory(qrName);
 
     setState(() {
       _isGenerating = false;
@@ -747,7 +804,9 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('QR코드가 생성되고 히스토리에 저장되었습니다!'),
+          content: Text(qrName.isNotEmpty
+              ? '"$qrName" QR코드가 생성되고 히스토리에 저장되었습니다!'
+              : 'QR코드가 생성되고 히스토리에 저장되었습니다!'),
           backgroundColor: widget.color,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -758,6 +817,19 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
         ),
       );
     }
+  }
+
+  Future<String?> _showNameDialog() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return await showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => _NameInputDialog(
+        isDark: isDark,
+        color: widget.color,
+      ),
+    );
   }
 
   void _shareQR() async {
@@ -933,7 +1005,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
     }
   }
 
-  Future<void> _saveToHistory() async {
+  Future<void> _saveToHistory(String name) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final historyJson = prefs.getString('qr_history') ?? '[]';
@@ -945,6 +1017,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
         data: _qrData,
         createdAt: DateTime.now(),
         color: _selectedColor.toARGB32().toRadixString(16),
+        name: name.isNotEmpty ? name : null,
       );
 
       historyList.add(historyItem.toJson());
@@ -969,7 +1042,17 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
   void _loadQRSize() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedSize = prefs.getDouble('default_qr_size') ?? prefs.getInt('default_qr_size')?.toDouble() ?? 220.0;
+      double savedSize = 220.0;
+
+      if (prefs.containsKey('default_qr_size')) {
+        final value = prefs.get('default_qr_size');
+        if (value is double) {
+          savedSize = value;
+        } else if (value is int) {
+          savedSize = value.toDouble();
+        }
+      }
+
       if (mounted) {
         setState(() {
           _qrSize = savedSize;
@@ -977,6 +1060,11 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
       }
     } catch (e) {
       debugPrint('Failed to load QR size preference: $e');
+      if (mounted) {
+        setState(() {
+          _qrSize = 220.0;
+        });
+      }
     }
   }
 }
@@ -987,6 +1075,7 @@ class QRHistoryItem {
   final String data;
   final DateTime createdAt;
   final String color;
+  final String? name;
 
   QRHistoryItem({
     required this.id,
@@ -994,6 +1083,7 @@ class QRHistoryItem {
     required this.data,
     required this.createdAt,
     required this.color,
+    this.name,
   });
 
   factory QRHistoryItem.fromJson(Map<String, dynamic> json) {
@@ -1003,6 +1093,7 @@ class QRHistoryItem {
       data: json['data'],
       createdAt: DateTime.parse(json['createdAt']),
       color: json['color'],
+      name: json['name'],
     );
   }
 
@@ -1013,6 +1104,160 @@ class QRHistoryItem {
       'data': data,
       'createdAt': createdAt.toIso8601String(),
       'color': color,
+      'name': name,
     };
+  }
+}
+
+class _NameInputDialog extends StatefulWidget {
+  final bool isDark;
+  final Color color;
+
+  const _NameInputDialog({
+    required this.isDark,
+    required this.color,
+  });
+
+  @override
+  State<_NameInputDialog> createState() => _NameInputDialogState();
+}
+
+class _NameInputDialogState extends State<_NameInputDialog> {
+  late final TextEditingController _nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: widget.isDark ? const Color(0xFF21262D) : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: widget.isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+          width: 1,
+        ),
+      ),
+      title: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: widget.color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: widget.color.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              Icons.edit_rounded,
+              color: widget.color,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'QR코드 이름 설정',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: widget.isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+            ),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'QR코드에 표시될 이름을 입력하세요. (선택사항)',
+            style: TextStyle(
+              fontSize: 14,
+              color: widget.isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: widget.isDark ? const Color(0xFF0D1117) : const Color(0xFFF6F8FA),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: widget.isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+                width: 1,
+              ),
+            ),
+            child: TextField(
+              controller: _nameController,
+              autofocus: true,
+              maxLength: 30,
+              style: TextStyle(
+                fontSize: 14,
+                color: widget.isDark ? const Color(0xFFE6EDF3) : const Color(0xFF24292F),
+              ),
+              decoration: InputDecoration(
+                hintText: '예: 회사 WiFi, 내 연락처...',
+                hintStyle: TextStyle(
+                  fontSize: 14,
+                  color: widget.isDark ? const Color(0xFF656D76) : const Color(0xFF8B949E),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                counterText: '',
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.pop(context, '');
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: widget.isDark ? const Color(0xFF8B949E) : const Color(0xFF656D76),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          child: const Text('건너뛰기'),
+        ),
+        FilledButton(
+          onPressed: () {
+            HapticFeedback.mediumImpact();
+            Navigator.pop(context, _nameController.text.trim());
+          },
+          style: FilledButton.styleFrom(
+            backgroundColor: widget.color,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          child: const Text('저장'),
+        ),
+      ],
+    );
   }
 }
